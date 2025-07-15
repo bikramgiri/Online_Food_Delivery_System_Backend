@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { all } = require('../routes/authRoutes');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -20,11 +21,20 @@ const userSchema = new Schema({
         required: [true, 'Phone number is required'],
         unique: true
       },
+      otp: {
+        type: String,
+        allowNull: true
+      },
+      otpGeneratedTime: {
+        type: Date,
+        default: Date.now,
+        allowNull: true
+      },
      role: {
         type: String,
         enum: ['customer', 'admin'],
         default: 'customer'
-      }
+      },
    }, {
      timestamps: true // Automatically manage createdAt and updatedAt fields
    });
