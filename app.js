@@ -13,9 +13,11 @@ app.use(cors({
 
 // Routes here
 const authRoutes = require('./routes/authRoutes');
+const ProductRoute = require('./routes/productRoute');
 
 // *Database connection
 const { connectDatabase } = require('./database/database');
+const Product = require('./model/productModel');
 connectDatabase()
 
 app.get('/', (req,res)=>{
@@ -25,6 +27,7 @@ app.get('/', (req,res)=>{
 })
 
 app.use('/', authRoutes);
+app.use('/', ProductRoute);
 
 // Server configuration
 const PORT = process.env.PORT || 3000
