@@ -3,6 +3,10 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser') // Import the cookie-parser module for parsing cookies
+const {multer,storage} = require('./middleware/multerConfig'); // Import multer and storage configuration
+const upload = multer({storage: storage}) // Create an instance of multer with the storage configuration
+
 
 // Node js lai form bta aako data lai handle garna ko lagi
 app.use(express.json())
@@ -10,6 +14,13 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors({
       origin: "http://localhost:5173", // React app ko port
 }))
+app.use(cookieParser()) // Middleware to parse cookies in the request
+
+// Give access to storage folder images
+app.use('/storage', express.static('storage')) // Serve static files from the storage directory
+// or
+// give access to images in storage folder
+// app.use(express.static('storage'))
 
 // Routes here
 const authRoutes = require('./routes/authRoutes');
@@ -28,6 +39,7 @@ app.get('/', (req,res)=>{
 
 app.use('/', authRoutes);
 app.use('/', ProductRoute);
+
 
 // Server configuration
 const PORT = process.env.PORT || 3000

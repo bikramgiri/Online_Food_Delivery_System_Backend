@@ -6,6 +6,10 @@ const productSchema = new Schema({
        type: String,
        required: [true, 'Name is required']
       },
+      productImage: {
+        type: String,
+        required: [true, 'Image is required']
+      },
      productStockQty: {
        type: Number,
        required: [true, 'Quantity is required']

@@ -2,12 +2,22 @@ const Product = require("../../../model/productModel");
 
 
 exports.createProduct = async (req, res) => {
-      console.log(req.user)
+      const file = req.file
+      // if (!file) {
+      //       productImage = "No image uploaded"; // If no file is uploaded, set a default message
+      // } else {
+      //       productImage = process.env.BACKEND_URL + '/storage/' + file.filename; // Get the filename from the uploaded file
+      // }
+
+      // *OR
+
+      productImage = process.env.BACKEND_URL + '/storage/' + file.filename; // Get the filename from the uploaded file
+
       const {productName, productStockQty, productPrice, productStatus, productDescription} = req.body;
 
-      if (!productName || !productStockQty || !productPrice || !productStatus || !productDescription) {
+      if (!productName || !productImage || !productStockQty || !productPrice || !productStatus || !productDescription) {
             return res.status(400).json({
-                  message: "productName, productStockQty, productPrice, productStatus and productDescription are required"
+                  message: "productName, productImage, productStockQty, productPrice, productStatus and productDescription are required"
             });
       }
 
@@ -18,6 +28,16 @@ exports.createProduct = async (req, res) => {
       if (existingProduct) {
             return res.status(400).json({
                   message: "Product with this name already exists"
+            });
+      }
+
+      // validate product image is already exists
+      const existingImage = await Product.findOne({
+            productImage: productImage
+      });
+      if (existingImage) {
+            return res.status(400).json({
+                  message: "Product with this image already exists"
             });
       }
 
@@ -42,9 +62,17 @@ exports.createProduct = async (req, res) => {
             });
       }
 
+      // validate product description
+      if (productDescription.length < 4) {
+            return res.status(400).json({
+                  message: "Product description must be at least 10 characters long"
+            });
+      }
+
       // Create a new product
       const newProduct = await Product.create({
             productName : productName,
+            productImage : productImage, // Assuming you want to store the full URL
             productStockQty : productStockQty,
             productPrice : productPrice,
             productStatus : productStatus,
