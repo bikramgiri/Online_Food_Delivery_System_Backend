@@ -83,3 +83,39 @@ exports.createProduct = async (req, res) => {
             message: "Product created successfully"
             });
 };
+
+// Get All Products
+exports.getProducts = async (req, res) => {
+      const products = await Product.find();
+      if (products.length === 0) {
+            return res.status(404).json({
+                  message: "No products found",
+                  products: []
+            });
+      }
+      return res.status(200).json({
+            message: "Products fetched successfully",
+            products: products
+      });
+}
+
+// Get Single Product
+exports.getProduct = async (req, res) => {
+      const productId = req.params.id;
+      if (!productId) {
+            return res.status(400).json({
+                  message: "Product ID is required"
+            });
+      }
+      const product = await Product.findById(productId);
+      if (!product) {
+            return res.status(404).json({
+                  message: "Product not found",
+                  product: [] // Return an empty array if no product is found
+            });
+      }
+      return res.status(200).json({
+            message: "Product fetched successfully",
+            product: product
+      });
+}
