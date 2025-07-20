@@ -2,7 +2,8 @@ const User = require("../../../model/userModel");
 
 
 exports.getUsers = async (req, res) => {
-    const users = await User.find().select("-__v")
+    const userId = req.user.id;
+    const users = await User.find({_id : {$ne:userId}}).select("-__v") // ne = not equal to
     if(users.length > 1){
             return res.status(200).json({
                   message: "Users fetched successfully",
@@ -13,4 +14,25 @@ exports.getUsers = async (req, res) => {
             message: "No users found",
             users: []
       });
+}
+
+// delete user API
+exports.deleteUser = async (req, res) => {
+    const userId = req.params.id;
+      if(!userId){
+            return res.status(400).json({
+                  message: "User ID is required"
+            });
+      }
+    const user = await User.findByIdAndDelete(userId);
+    if(!user){
+        return res.status(404).json({
+            message: "User not found with this ID",
+            user: null
+        });
+    }
+    return res.status(200).json({
+        message: "User deleted successfully",
+        user: user
+    });
 }

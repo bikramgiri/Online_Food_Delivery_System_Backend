@@ -86,7 +86,13 @@ exports.createProduct = async (req, res) => {
 
 // Get All Products
 exports.getProducts = async (req, res) => {
-      const products = await Product.find();
+      const products = await Product.find().populate({
+            path: "reviews",
+            populate: {
+                  path: "userId",
+                  select: "username email" // Select only the fields you need from the User model
+            }
+      });
       if (products.length === 0) {
             return res.status(404).json({
                   message: "No products found",

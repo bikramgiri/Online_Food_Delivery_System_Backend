@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { reviewSchema } = require('./nextReviewModel');
 const Schema = mongoose.Schema;
 
 const productSchema = new Schema({
@@ -25,7 +26,9 @@ const productSchema = new Schema({
      productDescription: {
        type: String,
        required: [true, 'Description is required']
-     }
+     },
+     reviews : [reviewSchema], // Array of reviews
+
    }, {
      timestamps: true // Automatically manage createdAt and updatedAt fields
    });

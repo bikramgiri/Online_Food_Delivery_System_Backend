@@ -26,6 +26,7 @@ app.use('/storage', express.static('storage')) // Serve static files from the st
 const authRoutes = require('./routes/authRoutes');
 const ProductRoute = require('./routes/productRoute');
 const adminUsersRoute = require('./routes/adminUsersRoute');
+const userReviewRoute = require('./routes/userReviewRoute'); 
 
 // *Database connection
 const { connectDatabase } = require('./database/database');
@@ -41,6 +42,7 @@ app.get('/', (req,res)=>{
 app.use('/', authRoutes);
 app.use('/', ProductRoute);
 app.use('/', adminUsersRoute);
+app.use('/', userReviewRoute);
 
 
 // Server configuration
