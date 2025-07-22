@@ -27,7 +27,7 @@ const productSchema = new Schema({
        type: String,
        required: [true, 'Description is required']
      },
-     reviews : [reviewSchema], // Array of reviews
+     reviews : [reviewSchema], // Array of reviews for: exports.addProductReview of review Controller
 
    }, {
      timestamps: true // Automatically manage createdAt and updatedAt fields

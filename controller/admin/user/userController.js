@@ -7,12 +7,12 @@ exports.getUsers = async (req, res) => {
     if(users.length > 1){
             return res.status(200).json({
                   message: "Users fetched successfully",
-                  users: users
+                  data: users
             });
     }
       return res.status(404).json({
             message: "No users found",
-            users: []
+            data: []
       });
 }
 
@@ -28,11 +28,11 @@ exports.deleteUser = async (req, res) => {
     if(!user){
         return res.status(404).json({
             message: "User not found with this ID",
-            user: null
+            data: null
         });
     }
     return res.status(200).json({
         message: "User deleted successfully",
-        user: user
+        data: user
     });
 }

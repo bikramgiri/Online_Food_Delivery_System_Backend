@@ -1,8 +1,8 @@
 const Product = require("../../../model/productModel");
-
+const fs = require("fs");
 
 exports.createProduct = async (req, res) => {
-      const file = req.file
+      const file = req.file;
       // if (!file) {
       //       productImage = "No image uploaded"; // If no file is uploaded, set a default message
       // } else {
@@ -84,29 +84,87 @@ exports.createProduct = async (req, res) => {
             });
 };
 
-// Get All Products
-exports.getProducts = async (req, res) => {
-      const products = await Product.find().populate({
-            path: "reviews",
-            populate: {
-                  path: "userId",
-                  select: "username email" // Select only the fields you need from the User model
-            }
-      });
-      if (products.length === 0) {
-            return res.status(404).json({
-                  message: "No products found",
-                  products: []
+// Edit Product API
+exports.editProduct = async (req, res) => {
+      const productId = req.params.id;
+      if (!productId) {
+            return res.status(400).json({
+                  message: "Product ID is required"
             });
       }
-      return res.status(200).json({
-            message: "Products fetched successfully",
-            products: products
-      });
-}
 
-// Get Single Product
-exports.getProduct = async (req, res) => {
+      const product = await Product.findById(productId);
+      if (!product) {
+            return res.status(404).json({
+                  message: "Product not found with this ID"
+            });
+      }
+      const productImage = product.productImage; // http://localhost:3000/storage/AI.jpeg
+
+      const {productName,  productStockQty, productPrice, productStatus, productDescription} = req.body;
+      if (!productName || !productImage || !productStockQty || !productPrice || !productStatus || !productDescription) {
+            return res.status(400).json({
+                  message: "productName, productImage, productStockQty, productPrice, productStatus and productDescription are required"
+            });
+      }
+
+      // validate product stock quantity
+      if (productStockQty < 0) {
+            return res.status(400).json({
+                  message: "Product stock quantity must be a positive number"
+            });
+      }
+
+      // validate product price
+      if (productPrice < 0) {
+            return res.status(400).json({
+                  message: "Product price must be a positive number"
+            });
+      }
+
+      // validate product status
+      if (!['Available', 'Unavailable'].includes(productStatus)) {
+            return res.status(400).json({
+                  message: "Product status must be either 'Available' or 'Unavailable'"
+            });
+      }
+
+      // validate product description
+      if (productDescription.length < 4) {
+            return res.status(400).json({
+                  message: "Product description must be at least 10 characters long"
+            });
+      }
+      
+      const oldProductImage = product.productImage; // http://localhost:3000/storage/AI.jpeg
+      const lengthToCut = "http://localhost:3000/storage/".length
+      const finalImagePathAfterCut = oldProductImage.slice(lengthToCut);
+      if(req.file && req.file.filename) {
+            // Delete the old image file from Storage folder
+            fs.unlink("./storage/" + finalImagePathAfterCut, (err) => {
+                  if (err) {
+                        console.error("Error deleting old image:", err);
+                  } else {
+                        console.log("Old image deleted successfully");
+                  }
+            });
+      const productImage = process.env.BACKEND_URL + '/storage/' + req.file.filename; // Update with new image
+      const updatedProduct = await Product.findByIdAndUpdate(productId, {
+            productName: productName,
+            productImage: productImage,
+            productStockQty: productStockQty,
+            productPrice: productPrice,
+            productStatus: productStatus,
+            productDescription: productDescription
+      }, { new: true });
+      return res.status(200).json({
+            message: "Product updated successfully",
+            data: updatedProduct
+      });
+}};
+
+// delete product API
+exports.deleteProduct = async (req, res) => {
       const productId = req.params.id;
       if (!productId) {
             return res.status(400).json({
@@ -116,12 +174,23 @@ exports.getProduct = async (req, res) => {
       const product = await Product.findById(productId);
       if (!product) {
             return res.status(404).json({
-                  message: "Product not found",
-                  product: [] // Return an empty array if no product is found
+                  message: "Product not found with this ID"
             });
       }
+
+      const oldProductImage = product.productImage // http://localhost:3000/storage/AI.jpeg
+      const lengthToCut = "http://localhost:3000/storage/".length
+      const finalImagePathAfterCut = oldProductImage.slice(lengthToCut);
+      // Delete the image file from Storage folder
+      fs.unlink("./storage/" + finalImagePathAfterCut, (err) => {
+            if (err) {
+                  console.error("Error deleting image:", err);
+            }else {
+                  console.log("Image deleted successfully");
+            }
+      });
+      await Product.findByIdAndDelete(productId);
       return res.status(200).json({
-            message: "Product fetched successfully",
-            product: product
+            message: "Product deleted successfully"
       });
 }

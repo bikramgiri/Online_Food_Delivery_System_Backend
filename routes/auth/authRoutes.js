@@ -1,5 +1,5 @@
-const { registerUser, loginUser, logout, forgotPassword, verifyOtp, changePassword } = require('../controller/auth/authController');
-const catchError = require('../services/catchError');
+const { registerUser, loginUser, logout, forgotPassword, verifyOtp, changePassword } = require('../../controller/auth/authController');
+const catchError = require('../../services/catchError');
 
 const router = require('express').Router();
 

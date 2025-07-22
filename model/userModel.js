@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { all } = require('../routes/authRoutes');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -10,7 +9,8 @@ const userSchema = new Schema({
      email: {
        type: String,
        required: [true, 'Email is required'],
-       unique: true
+       unique: true,
+       lowercase: true
      },
      password: {
        type: String,

@@ -23,10 +23,11 @@ app.use('/storage', express.static('storage')) // Serve static files from the st
 // app.use(express.static('storage'))
 
 // Routes here
-const authRoutes = require('./routes/authRoutes');
-const ProductRoute = require('./routes/productRoute');
-const adminUsersRoute = require('./routes/adminUsersRoute');
-const userReviewRoute = require('./routes/userReviewRoute'); 
+const authRoutes = require('./routes/auth/authRoutes');
+const ProductRoute = require('./routes/admin/productRoute');
+const adminUsersRoute = require('./routes/admin/adminUsersRoute');
+const userReviewRoute = require('./routes/user/userReviewRoute'); 
+const userProfileRoute = require('./routes/user/userProfileRoute');
 
 // *Database connection
 const { connectDatabase } = require('./database/database');
@@ -43,7 +44,7 @@ app.use('/', authRoutes);
 app.use('/', ProductRoute);
 app.use('/', adminUsersRoute);
 app.use('/', userReviewRoute);
-
+app.use('/', userProfileRoute);
 
 // Server configuration
 const PORT = process.env.PORT || 3000
