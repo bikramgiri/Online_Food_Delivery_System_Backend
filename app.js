@@ -28,6 +28,7 @@ const ProductRoute = require('./routes/admin/productRoute');
 const adminUsersRoute = require('./routes/admin/adminUsersRoute');
 const userReviewRoute = require('./routes/user/userReviewRoute'); 
 const userProfileRoute = require('./routes/user/userProfileRoute');
+const cartRoute = require('./routes/user/cartRoute');
 
 // *Database connection
 const { connectDatabase } = require('./database/database');
@@ -45,6 +46,7 @@ app.use('/', ProductRoute);
 app.use('/', adminUsersRoute);
 app.use('/', userReviewRoute);
 app.use('/', userProfileRoute);
+app.use('/', cartRoute);
 
 // Server configuration
 const PORT = process.env.PORT || 3000
