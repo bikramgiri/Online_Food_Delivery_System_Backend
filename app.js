@@ -29,10 +29,11 @@ const adminUsersRoute = require('./routes/admin/adminUsersRoute');
 const userReviewRoute = require('./routes/user/userReviewRoute'); 
 const userProfileRoute = require('./routes/user/userProfileRoute');
 const cartRoute = require('./routes/user/cartRoute');
+const adminOrderRoute = require('./routes/admin/adminOrderRoute');
+const userOrderRoute = require('./routes/user/userOrderRoute');
 
 // *Database connection
 const { connectDatabase } = require('./database/database');
-const Product = require('./model/productModel');
 connectDatabase()
 
 app.get('/', (req,res)=>{
@@ -43,10 +44,12 @@ app.get('/', (req,res)=>{
 
 app.use('/', authRoutes);
 app.use('/', ProductRoute);
-app.use('/', adminUsersRoute);
-app.use('/', userReviewRoute);
-app.use('/', userProfileRoute);
+app.use('/admin/', adminUsersRoute);
+app.use('/users/', userReviewRoute);
+app.use('/users/', userProfileRoute);
 app.use('/', cartRoute);
+app.use('/admin/', adminOrderRoute);
+app.use('/users/', userOrderRoute);
 
 // Server configuration
 const PORT = process.env.PORT || 3000
