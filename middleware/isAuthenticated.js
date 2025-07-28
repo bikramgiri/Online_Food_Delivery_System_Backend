@@ -30,6 +30,13 @@ const isAuthenticated = async (req, res, next) => {
             });
       }
 
+      // check token is expired or not
+      if (decoded.exp < Date.now() / 1000) { 
+            return res.status(401).json({
+                  message: "Unauthorized access, token is expired"
+            });
+      }
+
       // check if decoded.id(userId) exists in the user table
       const userExists = await User.findById(decoded.userId);
       if (!userExists) {

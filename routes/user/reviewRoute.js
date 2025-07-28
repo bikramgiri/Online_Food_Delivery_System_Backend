@@ -7,6 +7,7 @@ const catchError = require("../../services/catchError");
 const router = require("express").Router()
 
 router.route("/reviews").get(isAuthenticated, permitTo("customer"), catchError(getMyReviews))
+
 router.route("/reviews/:id")
 .post(isAuthenticated, permitTo("customer"), catchError(createReview))
 // .post(isAuthenticated, addProductReview)

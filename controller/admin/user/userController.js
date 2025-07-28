@@ -24,15 +24,9 @@ exports.deleteUser = async (req, res) => {
                   message: "User ID is required"
             });
       }
-    const user = await User.findByIdAndDelete(userId);
-    if(!user){
-        return res.status(404).json({
-            message: "User not found with this ID",
-            data: null
-        });
-    }
+    await User.findByIdAndDelete(userId);
     return res.status(200).json({
         message: "User deleted successfully",
-        data: user
+        data: null
     });
 }

@@ -80,8 +80,9 @@ exports.createProduct = async (req, res) => {
       });
 
       return res.status(201).json({
-            message: "Product created successfully"
-            });
+            message: "Product created successfully",
+            data: newProduct
+      });
 };
 
 // Edit Product API

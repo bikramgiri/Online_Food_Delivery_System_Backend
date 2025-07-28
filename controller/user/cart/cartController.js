@@ -35,10 +35,14 @@ exports.addToCart = async(req,res)=>{
           })
       }
 
-      user.cart.push(productId)
+      const cart = user.cart.push(productId)
       await user.save()
       return res.status(200).json({
-          message: "Product added to cart successfully"
+          message: "Product added to cart successfully",
+          data: {
+              productId: productId,
+              cart: user.cart
+          }
       })
 }
 
@@ -113,6 +117,7 @@ exports.deleteCartItem = async(req,res)=>{
 
       await user.save()
       return res.status(200).json({
-          message: "Product removed from cart successfully"
+          message: "Product removed from cart successfully",
+          data: null
       })
 }
