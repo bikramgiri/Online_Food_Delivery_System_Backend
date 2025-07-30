@@ -31,6 +31,7 @@ const userProfileRoute = require('./routes/user/userProfileRoute');
 const cartRoute = require('./routes/user/cartRoute');
 const adminOrderRoute = require('./routes/admin/adminOrderRoute');
 const userOrderRoute = require('./routes/user/userOrderRoute');
+const paymentRoute = require('./routes/user/paymentRoute'); // Import the payment route
 
 // *Database connection
 const { connectDatabase } = require('./database/database');
@@ -38,18 +39,19 @@ connectDatabase()
 
 app.get('/', (req,res)=>{
       res.status(200).json({
-            message: "Welcome to Online Food Delivery System API"
+            message: "Welcome to Online Food Delivery System"
       })
 })
 
-app.use('/', authRoutes);
-app.use('/', ProductRoute);
+app.use('/auth/', authRoutes);
+app.use('/admin/', ProductRoute);
 app.use('/admin/', adminUsersRoute);
 app.use('/users/', reviewRoute);
 app.use('/users/', userProfileRoute);
 app.use('/users/', cartRoute);
 app.use('/admin/', adminOrderRoute);
 app.use('/users/', userOrderRoute);
+app.use('/users/', paymentRoute); 
 
 // Server configuration
 const PORT = process.env.PORT || 3000

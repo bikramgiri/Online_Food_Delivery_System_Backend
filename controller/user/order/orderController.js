@@ -1,4 +1,5 @@
 const Order = require("../../../model/orderModel");
+const Product = require("../../../model/productModel");
 
 // Create a new order
 exports.createOrder = async (req, res) => {
@@ -15,14 +16,12 @@ exports.createOrder = async (req, res) => {
             });
       }
 
-      // Validate items
+      // check items must have product and quantity
       if (!Array.isArray(items) || items.length === 0) {
             return res.status(400).json({
                   message: "Items must be a non-empty array"
             });
       }
-
-      // Validate each item in the order
       for (const item of items) {
             if (!item.product || !item.quantity) {
                   return res.status(400).json({
@@ -31,17 +30,56 @@ exports.createOrder = async (req, res) => {
             }
       }
 
-      // check order total amount
-      const calculatedTotal = items.reduce((acc, item) => acc + (item.quantity * item.product.price), 0);
-      if (calculatedTotal !== totalAmount) {
+      // Fetch product prices from product IDs
+      const productIds = items.map(item => item.product);
+      const products = await Product.find({ _id: { $in: productIds } }).select('productPrice');
+      if (products.length !== productIds.length) {
             return res.status(400).json({
-                  message: "Total amount is incorrect"
+                  message: "One or more products not found"
             });
       }
 
-      // check if order is already crearted
-      const existingOrder = await Order.findOne({ user: userId, status: 'pending' });
-      if (existingOrder) {
+      // Create a map of product IDs to prices
+      const productPriceMap = products.reduce((map, product) => {
+            map[product._id.toString()] = product.productPrice;
+            return map;
+      }, {});
+
+      // Calculate total amount
+      const calculatedTotal = items.reduce((acc, item) => {
+            const price = productPriceMap[item.product];
+            if (!price) {
+                  throw new Error(`Price not found for product ${item.product}`);
+            }
+            return acc + (item.quantity * price);
+      }, 0);
+
+      // Validate total amount
+      if (calculatedTotal !== totalAmount) {
+            return res.status(400).json({
+                  message: "Total amount is incorrect",
+                  calculatedTotal,
+                  providedTotal: totalAmount
+            });
+      }
+
+      // Validate shipping address
+      if (!shippingAddress || typeof shippingAddress !== 'string') {
+            return res.status(400).json({
+                  message: "Invalid shipping address"
+            });
+      }
+
+      // validate payment details as payment method must be either 'Cash on Delivery' or 'Khalti'
+      if (!paymentDetails || !['Cash on Delivery', 'Khalti'].includes(paymentDetails.method)) {
+            return res.status(400).json({
+                  message: "Invalid payment method"
+            });
+      }
+
+      // check if order is already exists or not by userId and productId
+      const existingOrderCheck = await Order.findOne({ user: userId, product: { $in: productIds }, status: 'pending' });
+      if (existingOrderCheck) {
             return res.status(400).json({
                   message: "An order is already in progress"
             });
@@ -108,14 +146,12 @@ exports.updateMyOrder = async (req, res) => {
             });
       }
 
-      // Validate items
+      // check items must have product and quantity
       if (!Array.isArray(items) || items.length === 0) {
             return res.status(400).json({
                   message: "Items must be a non-empty array"
             });
       }
-
-      // Validate each item in the order
       for (const item of items) {
             if (!item.product || !item.quantity) {
                   return res.status(400).json({
@@ -124,33 +160,50 @@ exports.updateMyOrder = async (req, res) => {
             }
       }
 
-      // check order total amount
-      const calculatedTotal = items.reduce((acc, item) => acc + (item.quantity * item.product.price), 0);
-      if (calculatedTotal !== totalAmount) {
+      // Fetch product prices from product IDs
+      const productIds = items.map(item => item.product);
+      const products = await Product.find({ _id: { $in: productIds } }).select('productPrice');
+      if (products.length !== productIds.length) {
             return res.status(400).json({
-                  message: "Total amount is incorrect"
+                  message: "One or more products not found"
             });
       }
 
-      // validate shipping address
+      // Create a map of product IDs to prices
+      const productPriceMap = products.reduce((map, product) => {
+            map[product._id.toString()] = product.productPrice;
+            return map;
+      }, {});
+
+      // Calculate total amount
+      const calculatedTotal = items.reduce((acc, item) => {
+            const price = productPriceMap[item.product];
+            if (!price) {
+                  throw new Error(`Price not found for product ${item.product}`);
+            }
+            return acc + (item.quantity * price);
+      }, 0);
+
+      // Validate total amount
+      if (calculatedTotal !== totalAmount) {
+            return res.status(400).json({
+                  message: "Total amount is incorrect",
+                  calculatedTotal,
+                  providedTotal: totalAmount
+            });
+      }
+
+      // Validate shipping address
       if (!shippingAddress || typeof shippingAddress !== 'string') {
             return res.status(400).json({
                   message: "Invalid shipping address"
             });
       }
 
-      // validate payment details
-      if (!paymentDetails || !paymentDetails.method || !paymentDetails.status) {
+      // validate payment details as payment method must be either 'Cash on Delivery' or 'Khalti'
+      if (!paymentDetails || !['Cash on Delivery', 'Khalti'].includes(paymentDetails.method)) {
             return res.status(400).json({
-                  message: "Invalid payment details"
-            });
-      }
-
-      // check if order is already created
-      const existingOrderCheck = await Order.findOne({ user: userId, status: 'pending' });
-      if (existingOrderCheck && existingOrderCheck._id.toString() !== orderId) {
-            return res.status(400).json({
-                  message: "An order is already in progress"
+                  message: "Invalid payment method"
             });
       }
 
@@ -266,25 +319,24 @@ exports.cancelMyOrder = async (req, res) => {
                   message: "You are not authorized to change the status of this order"
             });
       }
-      
-      // make user able to change order status to cancelled only when the order is pending
-      const { status } = req.body
-      if (req.body.status === 'cancelled') {
-            if (existingOrder.status !== 'pending') {
-                  return res.status(400).json({
-                        message: "You can only cancel a pending order"
-                  });
-            }
-      }
 
       // update order status to cancelled only if the order is pending
-      if (existingOrder.status === 'cancelled') {
+      if (existingOrder.orderStatus === 'cancelled') {
             return res.status(400).json({
                   message: "Order is already cancelled"
             });
       }
 
-      const updateOrderStatus = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+      // Allow cancellation only for pending orders
+      if (existingOrder.orderStatus !== 'pending') {
+            return res.status(400).json({
+                  message: "You can only cancel a pending order"
+            });
+      }
+
+      const updateOrderStatus = await Order.findByIdAndUpdate(orderId, {
+            orderStatus: 'cancelled'
+      }, { new: true });
       return res.status(200).json({
             message: "Order status updated successfully",
             data: updateOrderStatus

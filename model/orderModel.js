@@ -26,12 +26,15 @@ const orderSchema = new Schema({
         type: String,
         required: true
       },
-      status: {
+      orderStatus: {
         type: String,
         enum: ['pending', 'shipped', 'delivered', 'cancelled', 'preparing'],
         default: 'pending'
       },
       paymentDetails: {
+        pidx : {
+          type: String,
+        },
         method: {
           type: String,
           enum: ['Cash on Delivery', 'Khalti'],

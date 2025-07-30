@@ -12,6 +12,8 @@ router.route("/orders")
 router.route("/orders/:id")
 .patch(isAuthenticated, permitTo('customer'), catchError(updateMyOrder))
 .delete(isAuthenticated, permitTo('customer'), catchError(deleteMyOrder))
-.patch(isAuthenticated, permitTo('customer'), catchError(cancelMyOrder));
+
+router.route("/orders/cancel/:id")
+.patch(isAuthenticated, permitTo('customer'), catchError(cancelMyOrder))
 
 module.exports = router;
