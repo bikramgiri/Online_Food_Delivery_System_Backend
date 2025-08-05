@@ -6,7 +6,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser') // Import the cookie-parser module for parsing cookies
 const {multer,storage} = require('./middleware/multerConfig'); // Import multer and storage configuration
 const upload = multer({storage: storage}) // Create an instance of multer with the storage configuration
-
+const {Server} = require("socket.io")
 
 // Node js lai form bta aako data lai handle garna ko lagi
 app.use(express.json())
@@ -22,7 +22,7 @@ app.use('/storage', express.static('storage')) // Serve static files from the st
 // give access to images in storage folder
 // app.use(express.static('storage'))
 
-// Routes here
+// *Routes here
 const authRoutes = require('./routes/auth/authRoutes');
 const ProductRoute = require('./routes/admin/productRoute');
 const adminUsersRoute = require('./routes/admin/adminUsersRoute');
@@ -55,6 +55,13 @@ app.use('/users/', paymentRoute);
 
 // Server configuration
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
+});
+const io = new Server(server)
+
+io.on("connection", (socket) => {
+  socket.on("Socket.io connected", (data) => {
+    console.log("A user connected");
+  });
 });
