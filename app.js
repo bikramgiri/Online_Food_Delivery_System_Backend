@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser') // Import the cookie-parser module
 const {multer,storage} = require('./middleware/multerConfig'); // Import multer and storage configuration
 const upload = multer({storage: storage}) // Create an instance of multer with the storage configuration
 const {Server} = require("socket.io")
+const User = require('./model/userModel');
 
 // Node js lai form bta aako data lai handle garna ko lagi
 app.use(express.json())
@@ -60,8 +61,23 @@ const server = app.listen(PORT, () => {
 });
 const io = new Server(server)
 
-io.on("connection", (socket) => {
-  socket.on("Socket.io connected", (data) => {
-    console.log("A user connected");
-  });
-});
+// io.on("connection", (socket) => {
+//     socket.on("register", async (data) => {
+//             const { username, email, password, phoneNumber } = data;
+//             // await User.create({
+//             //       username: username,
+//             //       email: email,
+//             //       password: password,
+//             //       phoneNumber: phoneNumber
+//             // });
+//             // socket.emit("response", { message: "User registered successfully" });
+//             io.to(socket.id).emit("response", { message: "User registered successfully" });
+//     });
+// });
+
+function getSocketIo(){
+      return io
+}
+
+module.exports.getSocketIo = getSocketIo
+

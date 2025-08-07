@@ -47,7 +47,9 @@ exports.initiateKhaltiPayment = async (req, res) => {
 }
 
 exports.verifyPidx = async (req, res) => {
-  const pidx = req.query.pidx;
+  const app = require("./../../../app")
+  const io = app.getSocketIo()
+  const pidx = req.query.pidx
   const response = await axios.post(`${process.env.KHALTI_TEST}/epayment/lookup/`, {pidx}, {
     headers: {
       "Authorization": `Key ${process.env.KHALTI_SECRET_KEY}`
@@ -62,12 +64,19 @@ exports.verifyPidx = async (req, res) => {
     // await order[0].save();
 
     // *Method 2: Using findOne() returns object
-    const order = await Order.findOne({ "paymentDetails.pidx": pidx });
+    const order = await Order.findOne({ "paymentDetails.pidx": pidx })
     console.log("Order:", order)
     order.paymentDetails.status = "paid";
     await order.save();
 
+    // // Get socket.id of the requesting user
+    // io.on("connection", (socket) => {
+    //   io.to(socket.id).emit("payment", { message: "Payment successful", orderId: order._id});
+    // });
+
     // **notify to the user about successful payment
+    // io.emit("paymentSuccess", { message: "Payment successful", orderId: order._id })
+
     // return res.status(200).json({
     //   message: "Payment successful",
     //   data: response.data
@@ -76,6 +85,12 @@ exports.verifyPidx = async (req, res) => {
     res.redirect("http://localhost:3000/users/payment/success");
   }else{
     // **notify to the user about failed payment
+    // io.on("connection", (socket) => {
+    //   io.to(socket.id).emit("payment", { message: "Payment failed", pidx: pidx });
+    // });
+    // **OR
+    // io.emit("paymentFailure", { message: "Payment failed", pidx: pidx })
+
     // return res.status(400).json({
     //   message: "Payment failed",
     //   data: response.data
