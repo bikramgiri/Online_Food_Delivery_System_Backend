@@ -10,7 +10,7 @@ const router = require('express').Router();
 
 router.route('/products')
 .post(isAuthenticated, permitTo('admin'), (upload.single('productImage')), catchError(createProduct))
-.get(isAuthenticated, catchError(getProducts));
+.get(catchError(getProducts));
 
 router.route('/products/:id')
 .get(isAuthenticated, catchError(getProduct))

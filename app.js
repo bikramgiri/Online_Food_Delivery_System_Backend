@@ -13,7 +13,7 @@ const User = require('./model/userModel');
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-      origin: "http://localhost:5173", // React app ko port
+      origin: "*", // Allow all origins
 }))
 app.use(cookieParser()) // Middleware to parse cookies in the request
 
@@ -44,15 +44,15 @@ app.get('/', (req,res)=>{
       })
 })
 
-app.use('/auth/', authRoutes);
-app.use('/admin/', ProductRoute);
-app.use('/admin/', adminUsersRoute);
-app.use('/users/', reviewRoute);
-app.use('/users/', userProfileRoute);
-app.use('/users/', cartRoute);
-app.use('/admin/', adminOrderRoute);
-app.use('/users/', userOrderRoute);
-app.use('/users/', paymentRoute); 
+app.use('/auth', authRoutes);
+app.use('/admin', ProductRoute);
+app.use('/admin', adminUsersRoute);
+app.use('/users', reviewRoute);
+app.use('/users', userProfileRoute);
+app.use('/users', cartRoute);
+app.use('/admin', adminOrderRoute);
+app.use('/users', userOrderRoute);
+app.use('/users', paymentRoute);
 
 // Server configuration
 const PORT = process.env.PORT || 3000
