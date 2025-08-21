@@ -54,14 +54,15 @@ exports.registerUser = async (req, res) => {
       }
 
       // else create a new user
-      await User.create({
+      const userData = await User.create({
             username: username,
             email: email,
             password: bcrypt.hashSync(password, 10), // Hash the password
             phoneNumber: phoneNumber
       });
       res.status(201).json({
-            message: "User registered successfully"
+            message: "User registered successfully",
+            data: userData
       });
 }
 
