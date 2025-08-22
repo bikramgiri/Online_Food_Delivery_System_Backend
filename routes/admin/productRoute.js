@@ -13,7 +13,7 @@ router.route('/products')
 .get(catchError(getProducts));
 
 router.route('/products/:id')
-.get(isAuthenticated, catchError(getProduct))
+.get(catchError(getProduct))
 .delete(isAuthenticated, permitTo('admin'), catchError(deleteProduct))
 .patch(isAuthenticated, permitTo('admin'), (upload.single('productImage')), catchError(editProduct));
 
