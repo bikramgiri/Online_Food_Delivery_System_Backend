@@ -35,7 +35,13 @@ const userSchema = new Schema({
         enum: ['customer', 'admin'],
         default: 'customer'
       },
-      cart : [{ type : Schema.Types.ObjectId, ref: 'Product' }]
+      cart : [{
+        quantity: {
+          type: Number,
+          required: true
+        },
+        product : {type: Schema.Types.ObjectId, ref: 'Product'}
+      }]
    }, {
      timestamps: true // Automatically manage createdAt and updatedAt fields
    });
