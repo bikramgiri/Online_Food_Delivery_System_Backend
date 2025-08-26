@@ -14,7 +14,7 @@ exports.registerUser = async (req, res) => {
             });
       }
 
-      // Validate email format
+      // Validate email format like user@example.com
       if (!/^\S+@\S+\.\S+$/.test(email)) {
             return res.status(400).json({
                   message: 'Invalid email format'

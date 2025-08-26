@@ -6,7 +6,7 @@ const catchError = require('../../services/catchError');
 const router = require('express').Router();
 
 router.route("/orders")
-.post(isAuthenticated, createOrder)
+.post(isAuthenticated, catchError(createOrder))
 .get(isAuthenticated, catchError(getsMyOrders))
 
 router.route("/orders/:id")

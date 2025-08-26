@@ -108,13 +108,13 @@ exports.deleteCartItem = async (req, res) => {
   }
 
   // Check if the product is in the user's cart
-  if (!user.cart.includes(productId)) {
-    return res.status(400).json({
-      message: "Product is not in the cart",
-    });
-  }
+  // if (!user.cart.includes(productId)) {
+  //   return res.status(400).json({
+  //     message: "Product is not in the cart",
+  //   });
+  // }
 
-  user.cart = user.cart.filter((pId) => !productId.includes(pId)); // [1,2,3] ==> 2 ==> filter ==> [1,3] ==> user.cart = [1,3]
+  user.cart = user.cart.filter((item) => item.product != productId); // [1,2,3] ==> 2 ==> filter ==> [1,3] ==> user.cart = [1,3]
 
   // *To delete more than two products
   // productIds.forEach(productIdd => {
