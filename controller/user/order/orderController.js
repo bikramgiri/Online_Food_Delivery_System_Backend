@@ -1,5 +1,6 @@
 const Order = require("../../../model/orderModel");
 const Product = require("../../../model/productModel");
+const User = require("../../../model/userModel");
 
 // Create a new order
 exports.createOrder = async (req, res) => {
@@ -155,6 +156,12 @@ exports.createOrder = async (req, res) => {
     phoneNumber,
     paymentDetails,
   });
+
+      // Empty user cart after payment successful
+      const user = await User.findById(userId);
+      user.cart = [];
+      await user.save();
+
   return res.status(201).json({
     message: "Order created successfully",
     data: createdOrder,

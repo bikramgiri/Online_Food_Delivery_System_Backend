@@ -32,8 +32,8 @@ const orderSchema = new Schema({
       },
       orderStatus: {
         type: String,
-        enum: ['pending', 'shipped', 'delivered', 'cancelled', 'preparing'],
-        default: 'pending'
+        enum: ['Pending', 'In transit', 'Confirmed', 'Cancelled', 'Preparing'],
+        default: 'Pending'
       },
       paymentDetails: {
         pidx : {
