@@ -358,11 +358,10 @@ exports.deleteMyOrder = async (req, res) => {
 
   // check if order status is shipped, you are not allowed to delete it
   if (
-    existingOrder.orderStatus === "shipped" ||
-    existingOrder.orderStatus === "preparing"
+    existingOrder.orderStatus !== "pending"
   ) {
     return res.status(400).json({
-      message: "You cannot delete a shipped or preparing order",
+      message: "You cannot delete this order as it is not pending",
     });
   }
 
