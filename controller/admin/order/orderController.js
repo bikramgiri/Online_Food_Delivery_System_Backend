@@ -6,6 +6,11 @@ exports.getsAllOrders = async (req, res) => {
             path: "items.product",
             model: "Product",
             select: "-__v"
+      }).populate({
+            // populate user username, and phoneNumber only
+            path: "user",
+            model: "User",
+            select: "username phoneNumber"
       });
       if(orders.length === 0) {
             return res.status(404).json({
@@ -53,12 +58,19 @@ exports.updateOrderStatus = async (req, res) => {
             });
       }
 
-      // make admin update order status
-      if (!status || !['pending', 'shipped', 'delivered', 'cancelled', 'preparing'].includes(status)) {
+      // make admin unable to update cancelled order
+      if (order.orderStatus === 'Cancelled') {
             return res.status(400).json({
-                  message: "Invalid status"
+                  message: "You cannot update a cancelled order"
             });
       }
+       
+      // validate status
+      // if (!status || !['Pending', 'In Transit', 'Confirmed', 'Cancelled', 'Preparing'].includes(status)) {
+      //       return res.status(400).json({
+      //             message: "Invalid status"
+      //       });
+      // }
 
 
       // check user is admin
@@ -68,7 +80,7 @@ exports.updateOrderStatus = async (req, res) => {
             });
       }
 
-      const updateOrderStatus = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
+      const updateOrderStatus = await Order.findByIdAndUpdate(orderId, { orderStatus: status }, { new: true });
 
       return res.status(200).json({
             message: "Order status updated successfully",
