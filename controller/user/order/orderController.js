@@ -297,14 +297,14 @@ exports.updateMyOrder = async (req, res) => {
     });
   }
 
-  // check if order status is shipped, you are not allowed to update it
+  // check if order status is delivered, you are not allowed to update it
   if (
-    existingOrder.orderStatus === "shipped" ||
     existingOrder.orderStatus === "delivered" ||
+    existingOrder.orderStatus === "In transit" ||
     existingOrder.orderStatus === "preparing"
   ) {
     return res.status(400).json({
-      message: "You cannot update a shipped, delivered, or preparing order",
+      message: "You cannot update a delivered, In transit, or preparing order",
     });
   }
 
