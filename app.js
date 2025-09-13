@@ -4,8 +4,9 @@ const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser') // Import the cookie-parser module for parsing cookies
-const {multer,storage} = require('./middleware/multerConfig'); // Import multer and storage configuration
-const upload = multer({storage: storage}) // Create an instance of multer with the storage configuration
+const {multer,storage, upload} = require('./middleware/multerConfig'); // Import multer and storage configuration
+// const upload = multer({storage: storage}) // Create an instance of multer with the storage configuration
+// const { upload } = require('./middleware/multerConfig');
 const {Server} = require("socket.io")
 const User = require('./model/userModel');
 

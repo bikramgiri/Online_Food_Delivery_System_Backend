@@ -38,7 +38,8 @@ const userSchema = new Schema({
       cart : [{
         quantity: {
           type: Number,
-          required: true
+          required: true,
+          default: 1
         },
         product : {type: Schema.Types.ObjectId, ref: 'Product'}
       }]

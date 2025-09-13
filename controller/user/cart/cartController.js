@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Product = require("../../../model/productModel");
 const User = require("../../../model/userModel");
 
@@ -15,6 +16,14 @@ exports.addToCart = async (req, res) => {
       message: "Product ID is required",
     });
   }
+
+  // Validate productId as a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({
+      message: "Invalid Product ID",
+    });
+  }
+
   const productExist = await Product.findById(productId);
   if (!productExist) {
     return res.status(404).json({
@@ -30,7 +39,7 @@ exports.addToCart = async (req, res) => {
 
   // Check if the product is already in the user's cart if exist then increase quantity
   const existCartItem = user.cart.find((item) =>
-    item.product.equals(productId)
+    item.product && item.product.equals(productId)
   );
   if (existCartItem) {
     existCartItem.quantity += 1;
@@ -40,6 +49,12 @@ exports.addToCart = async (req, res) => {
       quantity: 1,
     });
   }
+
+  // Ensure all cart items have a quantity before saving
+  user.cart = user.cart.map((item) => ({
+    ...item,
+    quantity: item.quantity || 1, // Default to 1 if quantity is missing
+  }));
 
   await user.save();
   const updatedUser = await User.findById(userId).populate("cart.product");
@@ -114,17 +129,26 @@ exports.deleteCartItem = async (req, res) => {
   //   });
   // }
 
-  user.cart = user.cart.filter((item) => item.product != productId); // [1,2,3] ==> 2 ==> filter ==> [1,3] ==> user.cart = [1,3]
+  // user.cart = user.cart.filter((item) => item.product != productId); // [1,2,3] ==> 2 ==> filter ==> [1,3] ==> user.cart = [1,3]
+  
+  // Correctly filter the cart item using .equals() for ObjectId comparison
+  user.cart = user.cart.filter((item) => !item.product || !item.product.equals(productId));
 
   // *To delete more than two products
   // productIds.forEach(productIdd => {
   //   user.cart = user.cart.filter(pId => pId != productIdd) // [1,2,3] ==> 2 ==> filter ==> [1,3] ==> user.cart = [1,3]
   // })
 
+  // Ensure all remaining cart items have a quantity
+  user.cart = user.cart.map((item) => ({
+    ...item,
+    quantity: item.quantity || 1,
+  }));
+
   await user.save();
   return res.status(200).json({
     message: "Product removed from cart successfully",
-    data: null,
+    data: user.cart,
   });
 };
 
@@ -149,6 +173,7 @@ exports.updateCartItems = async (req, res) => {
       message: "Invalid quantity",
     });
   }
+  
   // Check if the product exists
 
   const productExist = await Product.findById(productId);
@@ -162,21 +187,21 @@ exports.updateCartItems = async (req, res) => {
   const user = await User.findById(userId);
 
   // Check if the product is in the user's cart
-  const cartItem = user.cart.find((item) => item.product.equals(productId));
+  const cartItem = user.cart.find((item) => item.product && item.product.equals(productId));
   if (!cartItem) {
     return res.status(404).json({
       message: "Product is not in the cart",
     });
   }
 
-  // Update the quantity
-  if (quantity <= 0) {
-    return res.status(400).json({
-      message: "Invalid quantity",
-    });
-  }
-
   cartItem.quantity = quantity;
+
+  // Ensure all cart items have a quantity
+  user.cart = user.cart.map((item) => ({
+    ...item,
+    quantity: item.quantity || 1,
+  }));
+
   await user.save();
   
   return res.status(200).json({

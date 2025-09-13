@@ -1,20 +1,27 @@
-const { createProduct, editProduct, deleteProduct } = require('../../controller/admin/product/productController');
+const { createProduct, editProduct, deleteProduct, updateProductStatus, updateProductStockQty } = require('../../controller/admin/product/productController');
 const isAuthenticated = require('../../middleware/isAuthenticated');
 const permitTo = require('../../middleware/permitTo');
-const { multer, storage } = require('../../middleware/multerConfig');
+const { multer, storage, upload } = require('../../middleware/multerConfig');
 const catchError = require('../../services/catchError');
 const { getProducts, getProduct } = require('../../controller/global/globalController');
-const upload = multer({storage: storage}) 
+// const upload = multer({storage: storage}) 
+// const { upload } = require('../middleware/multerConfig');
 
 const router = require('express').Router();
 
 router.route('/products')
-.post(isAuthenticated, permitTo('admin'), (upload.single('productImage')), catchError(createProduct))
+.post(isAuthenticated, permitTo('admin'), (upload.single('file')), catchError(createProduct))
 .get(catchError(getProducts));
+
+router.route('/products/productstockqty/:id')
+.patch(isAuthenticated, permitTo('admin'), updateProductStockQty)
+
+router.route('/products/productstatus/:id')
+.patch(isAuthenticated, permitTo('admin'), updateProductStatus)
 
 router.route('/products/:id')
 .get(catchError(getProduct))
+.patch(isAuthenticated, permitTo('admin'), (upload.single('file')), catchError(editProduct))
 .delete(isAuthenticated, permitTo('admin'), catchError(deleteProduct))
-.patch(isAuthenticated, permitTo('admin'), (upload.single('productImage')), catchError(editProduct));
 
 module.exports = router;

@@ -33,6 +33,8 @@ const storage = multer.diskStorage({
         // cb(null, req.userId + '-' + file.originalname)
       }
     })
-    
-module.exports = {multer,storage}  // format: common js module
+
+    const upload = multer({ storage });
+
+module.exports = { multer, upload, storage }  // format: common js module
 

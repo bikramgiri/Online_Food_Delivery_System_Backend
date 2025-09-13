@@ -122,6 +122,10 @@ exports.loginUser = async (req, res) => {
             sameSite: 'strict', // Prevent CSRF attacks
             maxAge: 1 * 24 * 60 * 60 * 1000 // 1 day in milliseconds
       });
+      // if token expired then navigate to login page
+      req.on('tokenExpired', () => {
+            res.redirect('/login');
+      });
 
       // Successful login
       res.status(200).json({
