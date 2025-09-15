@@ -1,4 +1,4 @@
-const { createProduct, editProduct, deleteProduct, updateProductStatus, updateProductStockQty } = require('../../controller/admin/product/productController');
+const { createProduct, editProduct, deleteProduct, updateProductStatus, updateProductStockQty, getOrdersOfProduct } = require('../../controller/admin/product/productController');
 const isAuthenticated = require('../../middleware/isAuthenticated');
 const permitTo = require('../../middleware/permitTo');
 const { multer, storage, upload } = require('../../middleware/multerConfig');
@@ -12,6 +12,9 @@ const router = require('express').Router();
 router.route('/products')
 .post(isAuthenticated, permitTo('admin'), (upload.single('file')), catchError(createProduct))
 .get(catchError(getProducts));
+
+router.route('/productOrders/:id')
+.get(isAuthenticated, permitTo('admin'), catchError(getOrdersOfProduct));
 
 router.route('/products/productstockqty/:id')
 .patch(isAuthenticated, permitTo('admin'), updateProductStockQty)
