@@ -28,6 +28,7 @@ app.use('/storage', express.static('storage')) // Serve static files from the st
 const authRoutes = require('./routes/auth/authRoutes');
 const ProductRoute = require('./routes/admin/productRoute');
 const adminUsersRoute = require('./routes/admin/adminUsersRoute');
+const dataServiceRoute = require('./routes/admin/dataServiceRoute');
 const reviewRoute = require('./routes/user/reviewRoute'); 
 const userProfileRoute = require('./routes/user/userProfileRoute');
 const cartRoute = require('./routes/user/cartRoute');
@@ -48,6 +49,7 @@ app.get('/', (req,res)=>{
 app.use('/auth', authRoutes);
 app.use('/admin', ProductRoute);
 app.use('/admin', adminUsersRoute);
+app.use('/admin', dataServiceRoute);
 app.use('/users', reviewRoute);
 app.use('/users', userProfileRoute);
 app.use('/users', cartRoute);
