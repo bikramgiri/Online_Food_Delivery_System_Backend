@@ -19,9 +19,11 @@ class DataService {
                   model: "User",
                   select: "username phoneNumber",
                 });
+            const allProducts = await Product.find()
+            const allUsers = await User.find({ role: "customer" })
             res.status(200).json({
                   message: "Data fetched successfully",
-                  data: {orders, users, products, allOrders}
+                  data: {orders, users, products, allOrders, allProducts, allUsers}
             })
       }
 }
