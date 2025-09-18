@@ -199,7 +199,8 @@ exports.forgotPassword = async (req, res) => {
       });
 
       res.status(200).json({
-            message: 'OTP sent to your email for password reset'
+            message: 'OTP sent to your email for password reset',
+            data: emailExist[0].email
       });
 }
 
@@ -236,7 +237,7 @@ exports.verifyOtp = async (req, res) => {
       const currentTime = Date.now();
       const otpGeneratedTime = emailExist[0].otpGeneratedTime;
       const timeDifference = currentTime - otpGeneratedTime;
-      const otpExpiryTime = 2 * 60 * 1000; // 2 minutes in milliseconds
+      const otpExpiryTime = 3 * 60 * 1000; // 3 minutes in milliseconds
       if (timeDifference > otpExpiryTime) { // Check if OTP has expired
             return res.status(400).json({
                   message: 'OTP has expired'

@@ -411,7 +411,7 @@ exports.cancelMyOrder = async (req, res) => {
   }
 
   // Allow cancellation only for pending orders
-  if (existingOrder.orderStatus !== "pending") {
+  if (existingOrder.orderStatus !== "Pending") {
     return res.status(400).json({
       message: "You can only cancel a pending order",
     });
