@@ -7,10 +7,10 @@ const catchError = require('../../services/catchError');
 const router = require('express').Router();
 
 router.route("/cart/:productId")
-.post(isAuthenticated, addToCart)
+.post(isAuthenticated, permitTo('customer'), catchError(addToCart))
 .delete(isAuthenticated, permitTo('customer'), catchError(deleteCartItem))
 .patch(isAuthenticated, permitTo('customer'), catchError(updateCartItems))
 
-router.route("/cart").get(isAuthenticated, catchError(getCartItems))
+router.route("/cart").get(isAuthenticated, permitTo('customer'), catchError(getCartItems))
 
 module.exports = router;

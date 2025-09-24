@@ -208,11 +208,11 @@ exports.updateMyOrder = async (req, res) => {
     });
   }
 
-  const { items, totalAmount, shippingAddress, paymentDetails } = req.body;
-  if (!items || !totalAmount || !shippingAddress || !paymentDetails) {
+  const { items, totalAmount, shippingAddress, paymentDetails, phoneNumber } = req.body;
+  if (!items || !totalAmount || !shippingAddress || !paymentDetails || !phoneNumber) {
     return res.status(400).json({
       message:
-        "items, total amount, shipping address, and payment details are required",
+        "items, total amount, shipping address, payment details, and phone number are required",
     });
   }
 
@@ -256,11 +256,14 @@ exports.updateMyOrder = async (req, res) => {
     return acc + item.quantity * price;
   }, 0);
 
+  const shippingCost = 200; // Fixed shipping cost
+  const calculatedTotalWithShipping = calculatedTotal + shippingCost;
+
   // Validate total amount
-  if (calculatedTotal !== totalAmount) {
+  if (calculatedTotalWithShipping !== totalAmount) {
     return res.status(400).json({
       message: "Total amount is incorrect",
-      calculatedTotal,
+      calculatedTotalWithShipping,
       providedTotal: totalAmount,
     });
   }
@@ -308,6 +311,13 @@ exports.updateMyOrder = async (req, res) => {
     });
   }
 
+  // Validate phone number
+  if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
+    return res.status(400).json({
+      message: "Invalid phone number format. It should be 10 digits.",
+    });
+  }
+
   // update order
   const updatedOrder = await Order.findByIdAndUpdate(
     orderId,
@@ -316,6 +326,7 @@ exports.updateMyOrder = async (req, res) => {
       totalAmount,
       shippingAddress,
       paymentDetails,
+      phoneNumber,
     },
     { new: true }
   );
@@ -411,7 +422,7 @@ exports.cancelMyOrder = async (req, res) => {
   }
 
   // Allow cancellation only for pending orders
-  if (existingOrder.orderStatus !== "Pending") {
+  if (existingOrder.orderStatus !== "pending") {
     return res.status(400).json({
       message: "You can only cancel a pending order",
     });

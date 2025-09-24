@@ -262,7 +262,7 @@ exports.verifyOtp = async (req, res) => {
   const currentTime = Date.now();
   const otpGeneratedTime = emailExist[0].otpGeneratedTime;
   const timeDifference = currentTime - otpGeneratedTime;
-  const otpExpiryTime = 50 * 60 * 1000; // 50 minutes in milliseconds
+  const otpExpiryTime = 3 * 60 * 1000; // 3 minutes in milliseconds
   if (timeDifference > otpExpiryTime) {
     // Check if OTP has expired
     return res.status(400).json({
