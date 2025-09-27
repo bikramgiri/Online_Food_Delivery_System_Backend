@@ -15,13 +15,16 @@ const reviewSchema = new Schema({
     rating: {
         type: Number,
         min: 1,
-        max: 10,
+        max: 5,
         default: 2
     },
     message: {
         type: String,
         required: true
-    }
+    },
+    productImage: {
+        type: String,
+      },
 }, { timestamps: true });
 
 const Review = mongoose.model('Review', reviewSchema);

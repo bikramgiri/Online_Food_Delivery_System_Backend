@@ -344,6 +344,7 @@ exports.deleteProduct = async (req, res) => {
       console.log("Image deleted successfully");
     }
   });
+  
   await Product.findByIdAndDelete(productId);
   return res.status(200).json({
     message: "Product deleted successfully",
