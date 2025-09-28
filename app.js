@@ -75,7 +75,6 @@ let onlineUsers = [];
 const addToOnlineUsers = (socketId, userId, role) => {
   onlineUsers = onlineUsers.filter((user) => user.userId !== userId);
   onlineUsers.push({ socketId, userId, role });
-  console.log("Online Users: ", onlineUsers);
 }
 
 io.on("connection", async (socket) => {
@@ -101,7 +100,6 @@ io.on("connection", async (socket) => {
 
     // check if decoded.id(userId) exists in the user table
     const userExists = await User.findById(decoded.userId);
-    console.log("User Exists: ", userExists);
     if (!userExists) {
       return res.status(404).json({
         message: "User not found",

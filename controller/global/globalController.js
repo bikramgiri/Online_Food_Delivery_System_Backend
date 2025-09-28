@@ -55,3 +55,26 @@ exports.getProduct = async (req, res) => {
             data: {product, productReviews}
       });
 }
+
+// Get all reviews
+exports.getAllReviews = async (req, res) => {
+      const reviews = await Review.find().populate({
+            path: "userId",
+            model: "User",
+            select: "username"
+      }).populate({
+            path: "productId",
+            model: "Product",
+            select: "productName"
+      });
+      if (reviews.length === 0) {
+            return res.status(404).json({
+                  message: "No reviews found",
+                  data: []
+            });
+      }
+      return res.status(200).json({
+            message: "Reviews fetched successfully",
+            data: reviews
+      });
+}

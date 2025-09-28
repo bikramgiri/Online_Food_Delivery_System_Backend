@@ -150,7 +150,15 @@ exports.getMyReviews = async (req, res) => {
                   message: "User ID is required"
             });
       }
-      const reviews = await Review.find({ userId })
+      const reviews = await Review.find({ userId }).populate({
+            path: "productId",
+            model: "Product",
+            select: "productName",
+      }).populate({
+            path: "userId",
+            model: "User",
+            select: "username",
+      });
       if (!reviews || reviews.length === 0) {
             return res.status(404).json({
                   message: "No reviews found for this user"
